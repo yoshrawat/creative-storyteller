@@ -12,6 +12,7 @@ class ImageBlock(BaseModel):
     prompt: str = Field(..., min_length=10)
     style: Optional[str] = "illustration"
     aspect_ratio: Optional[str] = "1:1"
+    image_base64: Optional[str] = None
 
 
 class AudioBlock(BaseModel):

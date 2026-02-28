@@ -4,7 +4,7 @@ import BlockSummary from "./BlockSummary";
 
 type Block =
   | { type: "text"; content: string }
-  | { type: "image"; prompt: string }
+  | { type: "image"; prompt: string; image_base64?: string }
   | { type: "summary"; content: string };
 
 export default function StoryRenderer({ blocks }: { blocks: Block[] }) {
@@ -16,7 +16,13 @@ export default function StoryRenderer({ blocks }: { blocks: Block[] }) {
             return <BlockText key={index} content={block.content} />;
 
           case "image":
-            return <BlockImage key={index} prompt={block.prompt} />;
+            return (
+              <BlockImage
+                key={index}
+                prompt={block.prompt}
+                image_base64={block.image_base64}
+              />
+            );
 
           case "summary":
             return <BlockSummary key={index} content={block.content} />;
