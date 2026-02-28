@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function BlockAudio({
   content,
@@ -12,15 +12,6 @@ export default function BlockAudio({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const isFailed = audio_base64 === "";
-
-  useEffect(() => {
-    if (audio_base64 && audioRef.current) {
-      audioRef.current.play().catch((err) => {
-        // Browser might block auto-play until user interaction
-        console.warn("Auto-play blocked:", err);
-      });
-    }
-  }, [audio_base64]);
 
   return (
     <div className={`flex flex-col gap-2 p-4 rounded-xl border shadow-sm transition-all hover:shadow-md ${isFailed ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100'}`}>
