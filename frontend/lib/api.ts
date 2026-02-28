@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function* fetchStoryStream(topic: string) {
-  const response = await fetch(`${API_URL}/api/story?topic=${encodeURIComponent(topic)}`);
+export async function* fetchStoryStream(topic: string, style: string) {
+  const response = await fetch(`${API_URL}/api/story?topic=${encodeURIComponent(topic)}&style=${encodeURIComponent(style)}`);
   
   if (!response.body) return;
   const reader = response.body.getReader();
@@ -18,7 +18,11 @@ export async function* fetchStoryStream(topic: string) {
 
     for (const line of lines) {
       if (line.trim()) {
-        yield JSON.parse(line);
+        try {
+          yield JSON.parse(line);
+        } catch (e) {
+          console.error("Error parsing JSON line:", line, e);
+        }
       }
     }
   }

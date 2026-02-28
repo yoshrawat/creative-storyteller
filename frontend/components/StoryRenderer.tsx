@@ -27,7 +27,7 @@ export default function StoryRenderer({ blocks }: { blocks: Block[] }) {
             return <BlockText key={index} content={block.content} />;
 
           case "audio":
-...
+            return (
               <BlockAudio
                 key={index}
                 content={block.content}
