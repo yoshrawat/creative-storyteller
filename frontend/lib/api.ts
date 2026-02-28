@@ -1,11 +1,29 @@
-import axios from "axios";
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const fetchStory = async (topic: string) => {
-  const response = await axios.get(`${API_URL}/api/story`, {
-    params: { topic },
-  });
+export async function* fetchStoryStream(topic: string, style: string) {
+  const response = await fetch(`${API_URL}/api/story?topic=${encodeURIComponent(topic)}&style=${encodeURIComponent(style)}`);
+  
+  if (!response.body) return;
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
 
-  return response.data;
-};
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (line.trim()) {
+        try {
+          yield JSON.parse(line);
+        } catch (e) {
+          console.error("Error parsing JSON line:", line, e);
+        }
+      }
+    }
+  }
+}
