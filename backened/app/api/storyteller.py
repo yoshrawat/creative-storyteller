@@ -9,14 +9,14 @@ from app.services.audio_generator import generate_audio_base64
 router = APIRouter()
 
 @router.get("/story")
-async def create_story_stream(topic: str, style: str = "3D digital art"):
+async def create_story_stream(topic: str, style: str = "3D digital art", format: str = "Storybook"):
     async def event_generator():
         # 1. Read prompt template
         with open('app/prompts/creative_director.txt') as f:
             template = f.read()
         
-        # Inject style into the prompt
-        prompt = f"{template}\n\nTopic: {topic}\n\nRequested Art Style: {style}"
+        # Inject style and format into the prompt
+        prompt = f"{template}\n\nTopic: {topic}\n\nRequested Art Style: {style}\n\nRequested Format: {format}"
 
         # 2. Generate JSON story (text blocks + image prompts + audio content)
         raw_output = await generate_story(prompt)
@@ -34,7 +34,7 @@ async def create_story_stream(topic: str, style: str = "3D digital art"):
                 task = asyncio.create_task(generate_audio_base64(block["content"]))
                 async_tasks.append((i, task))
             else:
-                # 4. Stream non-async blocks (text/summary/metadata) immediately
+                # 4. Stream non-async blocks immediately
                 yield json.dumps({"index": i, "block": block}) + "\n"
 
         # 5. As each task finishes, stream it to the frontend

@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function* fetchStoryStream(topic: string, style: string) {
-  const response = await fetch(`${API_URL}/api/story?topic=${encodeURIComponent(topic)}&style=${encodeURIComponent(style)}`);
+export async function* fetchStoryStream(topic: string, style: string, format: string) {
+  const response = await fetch(`${API_URL}/api/story?topic=${encodeURIComponent(topic)}&style=${encodeURIComponent(style)}&format=${encodeURIComponent(format)}`);
   
   if (!response.body) return;
   const reader = response.body.getReader();
