@@ -8,9 +8,9 @@ client = genai.Client(
     location=settings.GCP_REGION
 )
 
-def generate_story(prompt: str):
-    # Use the unified client to generate content
-    response = client.models.generate_content(
+async def generate_story(prompt: str):
+    # Use the asynchronous unified client
+    response = await client.aio.models.generate_content(
         model=settings.GEMINI_MODEL,
         contents=prompt,
         config={

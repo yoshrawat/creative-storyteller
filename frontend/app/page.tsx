@@ -1,21 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { fetchStory } from "@/lib/api";
+import { fetchStoryStream } from "@/lib/api";
 import StoryRenderer from "@/components/StoryRenderer";
 
 export default function Home() {
   const [topic, setTopic] = useState("");
-  const [blocks, setBlocks] = useState([]);
+  const [blocks, setBlocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic) return;
     setLoading(true);
+    setBlocks([]); // Reset previous story
 
     try {
-      const data = await fetchStory(topic);
-      setBlocks(data.blocks);
+      const stream = fetchStoryStream(topic);
+      for await (const chunk of stream) {
+        const { index, block } = chunk;
+        setBlocks((prev) => {
+          const newBlocks = [...prev];
+          // Ensure we have enough slots in the array
+          while (newBlocks.length <= index) {
+            newBlocks.push(null);
+          }
+          newBlocks[index] = block;
+          return newBlocks.filter(b => b !== null);
+        });
+      }
     } catch (error) {
       console.error(error);
       alert("Error generating story");
@@ -41,7 +53,8 @@ export default function Home() {
           />
           <button
             onClick={handleGenerate}
-            className="bg-blue-600 text-white px-4 rounded-lg"
+            disabled={loading}
+            className="bg-blue-600 text-white px-4 rounded-lg disabled:bg-gray-400"
           >
             {loading ? "Generating..." : "Generate"}
           </button>
