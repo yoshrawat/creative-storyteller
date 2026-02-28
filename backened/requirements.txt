@@ -2,6 +2,7 @@ fastapi
 uvicorn
 google-cloud-aiplatform
 google-genai
+google-cloud-texttospeech
 pydantic
 pydantic-settings
 python-dotenv
