@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  output: 'standalone',
 
   // Optional: If you later load external images
   images: {

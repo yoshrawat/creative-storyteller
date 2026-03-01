@@ -1,306 +1,176 @@
 # 🎬 Creative Storyteller
 
-An AI-powered multimodal storytelling & educational explainer platform built with:
+An AI-powered multimodal storytelling platform that acts as a **Creative Director**. It seamlessly weaves together text, cinematic images, neural audio narration, and video clips in a single, fluid output stream.
 
-- ⚡ FastAPI (Backend)
-- 🎨 Next.js + Tailwind (Frontend)
-- 🤖 Gemini (Vertex AI)
-- ☁️ Google Cloud Run
+## ✨ Features
 
-Generates:
-- Text
-- Diagrams / Images
-- Structured interleaved output
-- Educational explainers
+- **🧠 Creative Director Agent**: Establishes a Character Style Guide for visual and narrative consistency.
+- **🎙️ Neural Narration**: High-quality Text-to-Speech (TTS) for every scene.
+- **🖼️ Cinematic Visuals**: Powered by Imagen 3 for consistent, high-quality illustrations.
+- **📽️ Video Generation**: Dynamic 6-second cinematic clips generated via Veo.
+- **🎭 Multiple Modes**:
+  - **Interactive Storybook**: A paginated, book-like reading experience.
+  - **Social Media**: Instagram-style cards with captions and hashtags.
+  - **Marketing**: High-impact hero videos, banners, and professional copy.
+  - **Educational**: Clear explainers with diagrams and instructional audio.
+- **🎨 Style Selection**: Choose between Pixar, Anime, Realistic, Watercolor, and Cyberpunk.
 
 ---
 
-# 🏗 Project Structure
+## 🏗 Project Structure
 
+```text
 creative-storyteller/
-├── backend/     # FastAPI + Gemini
-├── frontend/    # Next.js UI
+├── backened/    # FastAPI + Gemini 2.0 + Imagen 3 + Veo + TTS
+├── frontend/    # Next.js 14 + Tailwind CSS + Framer Motion
 └── README.md
+```
 
 ---
 
-# 🖥️ RUNNING LOCALLY (STEP BY STEP)
+## 🖥️ Local Setup (Step-by-Step)
+
+### 1️⃣ Prerequisites
+- **Python 3.10+**
+- **Node.js 18+**
+- **Google Cloud SDK (gcloud)**
+- **Google Cloud Project** with billing enabled.
+
+### 🔹 Backend Setup (FastAPI)
+1. **Navigate to backend**: `cd backened`
+2. **Create Virtual Environment**:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+3. **Install Dependencies**: `pip install -r requirements.txt`
+4. **Authenticate Google Cloud**:
+   ```bash
+   gcloud auth application-default login
+   gcloud config set project YOUR_PROJECT_ID
+   ```
+5. **Enable APIs**:
+   ```bash
+   gcloud services enable aiplatform.googleapis.com texttospeech.googleapis.com
+   ```
+6. **Create `.env` file**:
+   ```env
+   GCP_PROJECT=your-project-id
+   GCP_REGION=us-central1
+   GEMINI_MODEL=gemini-2.0-flash
+   ```
+7. **Run Backend**: `uvicorn app.main:app --reload --port 8000`
+
+Backend runs at: `http://127.0.0.1:8000`  
+Health Check: `http://127.0.0.1:8000/health`  
+Swagger Docs: `http://127.0.0.1:8000/docs`
+
+### 🔹 Frontend Setup (Next.js)
+1. **Navigate to frontend**: `cd frontend`
+2. **Install Dependencies**: `npm install`
+3. **Create `.env.local`**:
+   ```env
+   NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+   ```
+4. **Run Frontend**: `npm run dev` (Runs at `http://localhost:3000`)
 
 ---
 
-## ✅ 1️⃣ Prerequisites
-
-Install:
-
-- Python 3.10+
-- Node.js 18+
-- Google Cloud SDK
-
-Check versions:
-
-python3 --version  
-node --version  
-gcloud --version  
-
----
-
-# 🔹 BACKEND SETUP (FastAPI + Gemini)
-
----
-
-## 2️⃣ Navigate to backend
-
-cd backend
-
----
-
-## 3️⃣ Create Virtual Environment
-
-python3 -m venv .venv  
-source .venv/bin/activate  
-
----
-
-## 4️⃣ Install Dependencies
-
-pip install -r requirements.txt  
-
-If requirements.txt doesn't exist:
-
-pip install fastapi uvicorn google-cloud-aiplatform pydantic pydantic-settings  
-
----
-
-## 5️⃣ Authenticate Google Cloud (IMPORTANT)
-
-Login:
-
-gcloud auth application-default login  
-
-Set project:
-
-gcloud config set project YOUR_PROJECT_ID  
-
-Enable Vertex AI API:
-
-gcloud services enable aiplatform.googleapis.com  
-
----
-
-## 6️⃣ Create .env File (backend/.env)
-
-GCP_PROJECT=your-project-id  
-GCP_REGION=us-central1  
-GEMINI_MODEL=gemini-1.5-pro  
-
----
-
-## 7️⃣ Run Backend
-
-uvicorn app.main:app --reload --port 8000  
-
-Backend runs at:
-
-http://127.0.0.1:8000  
-
-Swagger Docs:
-
-http://127.0.0.1:8000/docs  
-
----
-
-# 🔹 FRONTEND SETUP (Next.js)
-
----
-
-## 8️⃣ Navigate to frontend
-
-cd ../frontend  
-
----
-
-## 9️⃣ Install Dependencies
-
-npm install  
-
-If axios not installed:
-
-npm install axios  
-
----
-
-## 🔟 Create .env.local
-
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000  
-
----
-
-## 1️⃣1️⃣ Run Frontend
-
-npm run dev  
-
-Frontend runs at:
-
-http://localhost:3000  
-
----
-
-# ✅ LOCAL DEVELOPMENT FLOW
-
-Frontend (localhost:3000)  
-        ↓  
-FastAPI (localhost:8000)  
-        ↓  
-Vertex AI Gemini  
-
----
-
-# ☁️ DEPLOY TO GOOGLE CLOUD (STEP BY STEP)
-
-We deploy backend to Cloud Run.
-Frontend can be deployed to Vercel or Cloud Run.
-
----
-
-# 🚀 BACKEND DEPLOYMENT TO CLOUD RUN
-
----
-
-## 1️⃣ Enable Required APIs
-
-gcloud services enable run.googleapis.com  
-gcloud services enable aiplatform.googleapis.com  
-gcloud services enable cloudbuild.googleapis.com  
-
----
-
-## 2️⃣ Deploy Backend
-
-From backend folder:
-
-gcloud run deploy creative-storyteller-backend \
+## ☁️ Deploy to Google Cloud (Cloud Run)
+
+### 1️⃣ Enable Cloud Run & Build APIs
+```bash
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+```
+
+### 2️⃣ Deploy Backend
+From the `backened/` folder:
+```bash
+gcloud run deploy storyteller-backend \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --set-env-vars GCP_PROJECT=your-project-id,GCP_REGION=us-central1  
+  --set-env-vars GCP_PROJECT=your-project-id,GCP_REGION=us-central1
+```
+**Important**: Note the Service URL provided after deployment (e.g., `https://storyteller-backend-xxxx.run.app`).
 
-After deployment, you’ll get a URL like:
-
-https://creative-storyteller-backend-xxxx.run.app  
-
-Save this URL.
-
----
-
-## 3️⃣ Grant IAM Role (If Needed)
-
-Ensure Cloud Run service account has:
-
-- Vertex AI User
-
-You can check in:
-IAM & Admin → Service Accounts
-
----
-
-# 🚀 FRONTEND DEPLOYMENT
-
----
-
-## Option A: Deploy to Vercel (Recommended)
-
-1. Push project to GitHub  
-2. Import frontend folder into Vercel  
-3. Set environment variable:
-
-NEXT_PUBLIC_API_URL=https://your-cloud-run-url  
-
-Deploy.
-
----
-
-## Option B: Deploy to Cloud Run
-
-From frontend folder:
-
-gcloud run deploy creative-storyteller-frontend \
+### 3️⃣ Deploy Frontend
+From the `frontend/` folder:
+1. Replace `https://your-backend-url` with your actual backend URL:
+```bash
+gcloud run deploy storyteller-frontend \
   --source . \
   --region us-central1 \
-  --allow-unauthenticated  
-
-Set environment variable in Cloud Run UI:
-
-NEXT_PUBLIC_API_URL=https://your-backend-url  
-
----
-
-# 🧠 Environment Variables Summary
-
-Backend (.env or Cloud Run env):
-
-GCP_PROJECT  
-GCP_REGION  
-GEMINI_MODEL  
-
-Frontend (.env.local or Cloud Run env):
-
-NEXT_PUBLIC_API_URL  
+  --allow-unauthenticated \
+  --set-build-env-vars NEXT_PUBLIC_API_URL=https://your-backend-url \
+  --set-env-vars NEXT_PUBLIC_API_URL=https://your-backend-url
+```
+*(Note: Next.js requires the API URL during the build phase to bake it into the static pages, which is why we use `--set-build-env-vars`.)*
 
 ---
 
-# 🔐 Common Errors & Fixes
+## 🗑️ Undeploy & Cleanup from Google Cloud
+
+To completely remove the application and ensure no further charges are incurred, follow these steps:
+
+### 1️⃣ Delete Cloud Run Services
+This removes the running instances of your app.
+```bash
+# Delete the backend service
+gcloud run services delete storyteller-backend --region us-central1 --quiet
+
+# Delete the frontend service
+gcloud run services delete storyteller-frontend --region us-central1 --quiet
+```
+
+### 2️⃣ Delete Container Images (Artifact Registry)
+Every time you deploy, a container image is stored. Deleting the repository clears this storage.
+```bash
+gcloud artifacts repositories delete cloud-run-source-deploy --location us-central1 --quiet
+```
+
+### 3️⃣ Delete Source Code Buckets (Optional)
+The `--source` deployment creates temporary Cloud Storage buckets for your code. You can find and delete them (names usually start with `gcf-sources-`):
+```bash
+# List buckets to find the correct ones
+gcloud storage buckets list
+
+# Delete a specific bucket (replace <BUCKET_NAME>)
+gcloud storage buckets delete gs://<BUCKET_NAME> --recursive
+```
+
+### 4️⃣ Disable APIs (Optional)
+If you are done with the project entirely, you can disable the AI and TTS services:
+```bash
+gcloud services disable aiplatform.googleapis.com texttospeech.googleapis.com
+```
 
 ---
 
-## 403 Permission Denied
+## 🔐 IAM Roles (Cloud Run)
+Ensure the **Cloud Run Runtime Service Account** (usually `PROJECT_NUMBER-compute@developer.gserviceaccount.com`) has the following roles:
+- **Vertex AI User** (`roles/aiplatform.user`)
+- **Cloud TTS User** (`roles/texttospeech.user`)
 
-Run:
-
-gcloud auth application-default login  
-
----
-
-## CORS Error
-
-Ensure FastAPI has:
-
-CORSMiddleware configured for frontend URL.
+You can grant these in the IAM & Admin console.
 
 ---
 
-## Model Not Found
+## 🧠 Environment Variables Summary
 
-Try:
-
-GEMINI_MODEL=gemini-1.5-flash  
-
----
-
-# 📦 Production Recommendations
-
-- Use gemini-1.5-pro for high quality
-- Use gemini-1.5-flash for lower cost
-- Commit package-lock.json
-- Commit requirements.txt
-- Enable Cloud Logging
+| Variable | Location | Description |
+| :--- | :--- | :--- |
+| `GCP_PROJECT` | Backend | Your Google Cloud Project ID |
+| `GCP_REGION` | Backend | Cloud region (e.g., `us-central1`) |
+| `GEMINI_MODEL` | Backend | Model version (e.g., `gemini-2.0-flash`) |
+| `NEXT_PUBLIC_API_URL` | Frontend | Full URL of the backend API |
 
 ---
 
-# 🎯 What This Project Demonstrates
-
-- Multimodal AI
-- Structured interleaved output
-- FastAPI architecture
-- Next.js frontend
-- Google Cloud deployment
-- Vertex AI integration
-
----
-
-# 🔥 Future Enhancements
-
-- Streaming output
-- Real-time narration
-- Video export
-- Save/share stories
-- Multi-language support
+## 🎯 Technologies Used
+- **Google Gemini 2.0**: Multimodal reasoning and story orchestration.
+- **Imagen 3**: High-fidelity image generation.
+- **Google Veo**: Cinematic video generation.
+- **Cloud Text-to-Speech**: High-quality neural voices.
+- **FastAPI**: Asynchronous high-performance API.
+- **Next.js 14**: Modern reactive frontend.

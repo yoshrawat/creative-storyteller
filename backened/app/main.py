@@ -6,10 +6,14 @@ app = FastAPI(title="Creative Storyteller")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"], # Updated to be more permissive for deployment, or you can specify your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "creative-storyteller-backend"}
 
 app.include_router(router, prefix="/api")
