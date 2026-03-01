@@ -5,26 +5,27 @@ from fastapi.responses import StreamingResponse
 from app.services.gemini_client import generate_story
 from app.services.image_generator import generate_image_base64
 from app.services.audio_generator import generate_audio_base64
+from app.services.video_generator import generate_video_base64
 
 router = APIRouter()
 
 @router.get("/story")
-async def create_story_stream(topic: str, style: str = "3D digital art"):
+async def create_story_stream(topic: str, style: str = "3D digital art", format: str = "Storybook"):
     async def event_generator():
         # 1. Read prompt template
         with open('app/prompts/creative_director.txt') as f:
             template = f.read()
         
-        # Inject style into the prompt
-        prompt = f"{template}\n\nTopic: {topic}\n\nRequested Art Style: {style}"
+        # Inject style and format into the prompt
+        prompt = f"{template}\n\nTopic: {topic}\n\nRequested Art Style: {style}\n\nRequested Format: {format}"
 
-        # 2. Generate JSON story (text blocks + image prompts + audio content)
+        # 2. Generate JSON response (text blocks + image/video prompts + audio content)
         raw_output = await generate_story(prompt)
         data = json.loads(raw_output)
         
         blocks = data.get("blocks", [])
         
-        # 3. Start async tasks immediately (images and audio)
+        # 3. Start async tasks immediately (images, audio, and video)
         async_tasks = []
         for i, block in enumerate(blocks):
             if block["type"] == "image":
@@ -33,8 +34,11 @@ async def create_story_stream(topic: str, style: str = "3D digital art"):
             elif block["type"] == "audio":
                 task = asyncio.create_task(generate_audio_base64(block["content"]))
                 async_tasks.append((i, task))
+            elif block["type"] == "video":
+                task = asyncio.create_task(generate_video_base64(block["video_prompt"]))
+                async_tasks.append((i, task))
             else:
-                # 4. Stream non-async blocks (text/summary/metadata) immediately
+                # 4. Stream non-async blocks immediately
                 yield json.dumps({"index": i, "block": block}) + "\n"
 
         # 5. As each task finishes, stream it to the frontend
@@ -52,6 +56,8 @@ async def create_story_stream(topic: str, style: str = "3D digital art"):
                     updated_block["image_base64"] = result
                 elif updated_block["type"] == "audio":
                     updated_block["audio_base64"] = result
+                elif updated_block["type"] == "video":
+                    updated_block["video_base64"] = result
                 
                 yield json.dumps({"index": original_idx, "block": updated_block}) + "\n"
 
