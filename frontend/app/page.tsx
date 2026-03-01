@@ -12,7 +12,7 @@ const STYLES = [
   { label: "Cyberpunk", value: "Cyberpunk aesthetic, neon lights, high-tech, futuristic, rainy urban setting" }
 ];
 
-const FORMATS = ["Storybook", "Social Media"];
+const FORMATS = ["Storybook", "Social Media", "Marketing", "Educational"];
 
 export default function Home() {
   const [topic, setTopic] = useState("");
